@@ -1,0 +1,237 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@tboybash 
+Learn Git and GitHub without any code!
+Using the Hello World guide, you’ll start a branch, write comments, and open a pull request.
+
+
+1
+00tboybash/works
+ Code Issues 0 Pull requests 0 Actions Projects 0 Wiki Security Insights Settings
+works/Promotion
+@tboybash tboybash Update Promotion
+1e512f8 13 days ago
+204 lines (153 sloc)  7.65 KB
+  
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Oct  5 20:46:25 2019
+
+
+# PREDICTING STAFF PROMOTION
+
+@author: BRANCH
+"""
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+from sklearn import preprocessing 
+from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import train_test_split
+train_x, test_x, train_y, test_y = train_test_split(dat[correlation_results],dat[response])
+dat=pd.read_csv('ktrain.csv')
+test_dat=pd.read_csv('ktest.csv')
+
+
+# FEATURE SELECTION USING CORRELATION AND KBEST VARIABLE SELECTION APPROACH
+
+correlation_results = ['Last_performance_score',
+       'Year_of_recruitment', 'Targets_met', 'Previous_Award',
+       'Training_score_average']
+
+kbest = ['Trainings_Attended', 'Year_of_birth', 'Last_performance_score',
+       'Year_of_recruitment', 'Targets_met', 'Previous_Award',
+       'Training_score_average']
+
+best_best = ['Last_performance_score', 'Training_score_average']
+
+predictors=dat.columns[3:18]
+
+response=dat.columns[18]
+
+selector = SelectKBest(f_classif, k=5)
+
+selector.fit(dat[predictors], dat[response])
+
+le = preprocessing.LabelEncoder()
+dat[['Gender']] = le.fit_transform(dat['Gender'])
+dat[['Channel_of_Recruitment']] = le.fit_transform(dat['Channel_of_Recruitment'])
+dat[['Foreign_schooled']] = le.fit_transform(dat['Foreign_schooled'])
+dat[['Marital_Status']] = le.fit_transform(dat['Marital_Status'])
+dat[['Past_Disciplinary_Action']] = le.fit_transform(dat['Past_Disciplinary_Action'])
+dat[['Previous_IntraDepartmental_Movement']] = le.fit_transform(dat['Previous_IntraDepartmental_Movement'])
+dat[['No_of_previous_employers']] = le.fit_transform(dat['No_of_previous_employers'])
+
+
+scores = -np.log10(selector.pvalues_)
+df=pd.DataFrame({'variable': predictors, 'scores': scores})
+
+train_x, test_x, train_y, test_y = train_test_split(dat[correlation_results],dat[response])
+
+# LOOPING THROUGH DIFFERENT MACHINE LEARNING MODELS TO DETERMINE THE MODEL WITH THE BEST ACCURACY SCORE
+# RandomForestClassifier, DecisionTreeClassifier, LogisticRegression, GaussianNB, SVC
+
+acurracy_results_corr = []
+acurracy_results_kbest = []
+acurracy_results_best_best = []
+
+for classifier in [RandomForestClassifier, DecisionTreeClassifier, LogisticRegression, GaussianNB, SVC]:
+    correlation_results = ['Last_performance_score',
+       'Year_of_recruitment', 'Targets_met', 'Previous_Award',
+       'Training_score_average']
+    #train_x, test_x, train_y, test_y = train_test_split(dat[correlation_results],dat[response])
+    
+    if classifier == RandomForestClassifier:
+        forest = RandomForestClassifier()
+        acc_r = cross_val_score(forest, dat[correlation_results],dat[response],cv=5)
+        acurracy_results_corr.extend(acc_r)
+    
+    if classifier == DecisionTreeClassifier:
+        decision = DecisionTreeClassifier()
+        acc_d = cross_val_score(decision, dat[correlation_results],dat[response],cv=5)
+        acurracy_results_corr.extend(acc_d)
+        
+    if classifier == LogisticRegression:
+        logic = LogisticRegression()
+        acc_l = cross_val_score(logic, dat[correlation_results],dat[response],cv=5)
+        acurracy_results_corr.extend(acc_l)
+        
+    if classifier == GaussianNB:
+        naive = GaussianNB()
+        acc_n = cross_val_score(naive, dat[correlation_results],dat[response],cv=5)
+        acurracy_results_corr.extend(acc_n)
+        
+    if classifier == SVC:
+        SV = SVC()
+        acc_s = cross_val_score(SV, dat[correlation_results],dat[response],cv=5)
+        acurracy_results_corr.extend(acc_s)
+#cor = np.array(acurracy_results_corr)      
+#cor = cor.reshape(3,5)
+
+
+#for classifier in [RandomForestClassifier, DecisionTreeClassifier, LogisticRegression, GaussianNB, SVC]:
+        
+    kbest = ['Trainings_Attended', 'Year_of_birth', 'Last_performance_score',
+       'Year_of_recruitment', 'Targets_met', 'Previous_Award',
+       'Training_score_average']
+    #acurracy_results_kbest = []
+    train_x, test_x, train_y, test_y = train_test_split(dat[kbest],dat[response])
+
+    if classifier == RandomForestClassifier:
+        forest1 = RandomForestClassifier()
+        acc_rr = cross_val_score(forest1, dat[kbest],dat[response],cv=5)
+        acurracy_results_kbest.extend(acc_rr)
+    
+    if classifier == DecisionTreeClassifier:
+        decision1 = DecisionTreeClassifier()
+        acc_dd = cross_val_score(decision1, dat[kbest],dat[response],cv=5)
+        acurracy_results_kbest.extend(acc_dd)
+        
+    if classifier == LogisticRegression:
+        logic1 = LogisticRegression()
+        acc_ll = cross_val_score(logic1, dat[kbest],dat[response],cv=5)
+        acurracy_results_kbest.extend(acc_ll)
+        
+    if classifier == GaussianNB:
+        naive1 = GaussianNB()
+        acc_nn = cross_val_score(naive1, dat[kbest],dat[response],cv=5)
+        acurracy_results_kbest.extend(acc_nn)
+        
+    if classifier == SVC:
+        SV1 = SVC()
+        acc_ss = cross_val_score(SV1, dat[kbest],dat[response],cv=5)
+        acurracy_results_kbest.extend(acc_ss)
+#kb = np.array(acurracy_results_kbest)      
+#kb = cor.reshape(3,5)
+
+#for classifier in [RandomForestClassifier, DecisionTreeClassifier, LogisticRegression, GaussianNB, SVC]:
+    
+    best_best = ['Last_performance_score', 'Training_score_average']
+    #acurracy_results_best_best = []
+    train_x, test_x, train_y, test_y = train_test_split(dat[best_best],dat[response])
+    
+    if classifier == RandomForestClassifier:
+        forest2 = RandomForestClassifier()
+        acc_rrr = cross_val_score(forest2, dat[best_best],dat[response],cv=5)
+        acurracy_results_best_best.extend(acc_rrr)
+    
+    if classifier == DecisionTreeClassifier:
+        decision2 = DecisionTreeClassifier()
+        acc_ddd = cross_val_score(decision2, dat[best_best],dat[response],cv=5)
+        acurracy_results_best_best.extend(acc_ddd)
+        
+    if classifier == LogisticRegression:
+        logic2 = LogisticRegression()
+        acc_lll = cross_val_score(logic2, dat[best_best],dat[response],cv=5)
+        acurracy_results_best_best.extend(acc_lll)
+        
+    if classifier == GaussianNB:
+        naive2 = GaussianNB()
+        acc_nnn = cross_val_score(naive2, dat[best_best],dat[response],cv=5)
+        acurracy_results_best_best.extend(acc_nnn)
+        
+    if classifier == SVC:
+        SV2 = SVC()
+        acc_sss = cross_val_score(SV2, dat[best_best],dat[response],cv=5)
+        acurracy_results_best_best.extend(acc_sss)
+        
+cor = np.array(acurracy_results_corr)      
+cor = cor.reshape(5,5, order = 'F')
+cor
+
+kb = np.array(acurracy_results_kbest)      
+kb = kb.reshape(5,5, order = 'F')
+kb
+        
+b = np.array(acurracy_results_best_best)      
+b = b.reshape(5,5, order = 'F')
+b
+
+# TRAINING THE DATA USING THE BEST MODEL
+
+cl.fit(train_x,train_y)
+cfit=cl.predict(train_x)
+accuracy_score(cfit,train_y)
+cfit1=cl.predict(test_x)
+accuracy_score(cfit1,test_y)
+cross_val_score(cl, dat[correlation_results],dat[response], scoring='accuracy', cv =5)
+np.mean([0.92549582, 0.92417123, 0.92286609, 0.92299661, 0.92599843])
+
+train_x, test_x, train_y, test_y = train_test_split(dat[kbest],dat[response])
+np.mean([0.92275574, 0.92156095, 0.91999478, 0.92116941, 0.92273558])
+
+train_x, test_x, train_y, test_y = train_test_split(dat[best_best],dat[response])
+cross_val_score(cl, dat[correlation_results],dat[response], scoring='accuracy', cv =5)
+np.mean([0.92549582, 0.92417123, 0.92286609, 0.92299661, 0.92599843])
+
+
+
+
+
+© 2019 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
